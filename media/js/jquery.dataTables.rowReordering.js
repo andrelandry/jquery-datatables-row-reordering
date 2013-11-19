@@ -108,24 +108,25 @@
                 var tr = this;
                 var iRowPosition = parseInt(oTable.fnGetData(tr, properties.iIndexColumn));
                 if (iStart <= iRowPosition && iRowPosition <= iEnd) {
+                    
+                    var iRowNewPosition = 0;
                     if (tr.id == id) {
-                        oTable.fnUpdate(iNewPosition,
-								        oTable.fnGetPosition(tr), // get row position in current model
-								        properties.iIndexColumn,
-								        false); // false = defer redraw until all row updates are done
+                        iRowNewPosition = iNewPosition;
                     } else {
                         if (sDirection == "back") {
-                            oTable.fnUpdate(iRowPosition + 1,
-								        oTable.fnGetPosition(tr), // get row position in current model
-								        properties.iIndexColumn,
-								        false); // false = defer redraw until all row updates are done
+                            iRowNewPosition = iRowPosition + 1;
                         } else {
-                            oTable.fnUpdate(iRowPosition - 1,
-								        oTable.fnGetPosition(tr), // get row position in current model
-								        properties.iIndexColumn,
-								        false); // false = defer redraw until all row updates are done
+                            iRowNewPosition = iRowPosition - 1;
                         }
                     }
+
+                    oTable.fnUpdate(iRowNewPosition,
+                                        oTable.fnGetPosition(tr), // get row position in current model
+                                        properties.iIndexColumn,
+                                        false); // false = defer redraw until all row updates are done
+
+                    //Callback that a row changed position.
+                    properties.fnRowMoved(tr,sDirection,iStart,iEnd,iRowNewPosition);
                 }
             });
 
@@ -159,7 +160,8 @@
             sDataGroupAttribute: "data-group",
             fnStartProcessingMode: _fnStartProcessingMode,
             fnEndProcessingMode: _fnEndProcessingMode,
-            fnUpdateAjaxRequest: jQuery.noop			
+            fnUpdateAjaxRequest: jQuery.noop,
+            fnRowMoved: jQuery.noop // tr,sDirection,iStart,iEnd,iRowNewPosition        
         };
 
         var properties = $.extend(defaults, options);
